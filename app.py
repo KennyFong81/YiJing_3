@@ -229,7 +229,7 @@ st.subheader("🕒 時區設定")
 tz_list = ["Asia/Hong_Kong", "Asia/Taipei", "Asia/Shanghai", "UTC", "America/New_York"]
 selected_tz = st.selectbox("請選擇你的時區", tz_list, index=0)  # 預設香港
 
-Pythonif st.button("🔮 為我起一卦", type="primary", use_container_width=True):
+Python if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
     with st.spinner("正在模擬三銅錢古法起卦..."):
         import time
         time.sleep(1.5)
