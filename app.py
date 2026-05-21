@@ -308,7 +308,7 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
 本卦：{orig_name}
 變卦：{change_name}（第{changing_line}爻動）
 日主五行：{main_elem}
-建議：{record.get('日主五行', '')}宜守正待時、謙虛應變
+建議：{main_elem}宜守正待時、謙虛應變
 祝：福慧雙修、一生平安 🙏"""
         
         qr = qrcode.make(summary)
