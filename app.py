@@ -299,7 +299,7 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
             mark = "　**← 變動**" if (i+1) == changing_line else ""
             gua_label = "　**（下卦）**" if i < 3 else "　**（上卦）**"
             st.markdown(f"**{line_names[i]}爻**　{symbols[original_lines[i]]}{mark}{gua_label}")
-重點注意：
+重點注意
 
 每一行開頭的空格必須完全
         
