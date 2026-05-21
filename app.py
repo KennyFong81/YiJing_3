@@ -225,6 +225,9 @@ col1, col2, col3 = st.columns(3)
 year = col1.number_input("出生西元年", 1900, 2100, 1995)
 month = col2.number_input("出生月份", 1, 12, 1)
 day = col3.number_input("出生日期", 1, 31, 1)
+st.subheader("🕒 時區設定")
+tz_list = ["Asia/Hong_Kong", "Asia/Taipei", "Asia/Shanghai", "UTC", "America/New_York"]
+selected_tz = st.selectbox("請選擇你的時區", tz_list, index=0)  # 預設香港
 
 if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
     with st.spinner("正在模擬三銅錢古法起卦..."):
