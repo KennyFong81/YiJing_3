@@ -235,35 +235,37 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         hour = now.hour
         h_num = get_hour_number(hour)
         
-        # 已修正上卦下卦次序
-        lower = random.randint(1, 8)   # 下卦（黑色）
-        upper = random.randint(1, 8)   # 上卦（紅色）
+        # ==================== 起卦（上卦紅、下卦黑）====================
+        lower = random.randint(1, 8)   # 下卦
+        upper = random.randint(1, 8)   # 上卦
         
         lower_lines = TRIGRAM_LINES[lower][:]
         upper_lines = TRIGRAM_LINES[upper][:]
-        original_lines = lower_lines + upper_lines
+        original_lines = lower_lines + upper_lines   # 由下往上
         
         total = upper + lower + h_num
         remainder = total % 6
         changing_line = 6 if remainder == 0 else remainder
         
+        # 翻轉變動爻產生真正的變卦
         flip_idx = changing_line - 1
         new_lines = original_lines[:]
         new_lines[flip_idx] = 1 - new_lines[flip_idx]
         new_lower = get_trigram_from_lines(new_lines[0:3])
         new_upper = get_trigram_from_lines(new_lines[3:6])
         
+        # 【修正】正確對應64卦編號
         orig_id = (upper - 1) * 8 + lower
         change_id = (new_upper - 1) * 8 + new_lower
         
         orig_name, orig_mean = HEXAGRAMS.get(orig_id, ("未知卦", ""))
         change_name, change_mean = HEXAGRAMS.get(change_id, ("未知卦", ""))
         
-        # 【重要修正】這裡加上 main_elem =
         main_elem = five_elements_analysis(year, month)
         
         st.success(f"🙏 {name}，卦象已成！")
         
+        # 起卦過程
         st.subheader("📍 起卦過程")
         st.markdown(f'**上卦（紅色）**：<span style="color:red">**{upper}**</span>　{BAGUA[upper]}', unsafe_allow_html=True)
         st.markdown(f'**下卦（黑色）**：<span style="color:black">**{lower}**</span>　{BAGUA[lower]}', unsafe_allow_html=True)
@@ -271,14 +273,20 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         st.markdown(f'**總和** = {upper} + {lower} + {h_num} = **{total}**')
         st.markdown(f'**{total} ÷ 6** 餘數 **{remainder}** → **第 {changing_line} 爻變動**')
         
-        st.subheader("📜 本卦六爻（由下往上）")
-        line_names = ["初", "二", "三", "四", "五", "上"]
-        symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
-        for i in range(6):
-            mark = "　**← 變動**" if (i+1) == changing_line else ""
-            gua_label = "　**（下卦）**" if i < 3 else "　**（上卦）**"
-            st.markdown(f"**{line_names[i]}爻**　{symbols[original_lines[i]]}{mark}{gua_label}")
+        # ==================== 圖畫式卦象 ====================
+        def draw_hexagram(lines, title, is_changing=False):
+            st.subheader(title)
+            line_names = ["初", "二", "三", "四", "五", "上"]
+            symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
+            for i in range(6):
+                mark = "　**← 變動**" if (i+1) == changing_line and is_changing else ""
+                color = "red" if (i+1) == changing_line and is_changing else "black"
+                st.markdown(f"<span style='color:{color}'>**{line_names[i]}爻**　{symbols[lines[i]]}{mark}</span>", unsafe_allow_html=True)
         
+        draw_hexagram(original_lines, "✨ 本卦六爻圖（由下往上）")
+        draw_hexagram(new_lines, "🔄 變卦六爻圖（由下往上）", is_changing=True)
+        
+        # 本卦與變卦文字
         col_a, col_b = st.columns(2)
         with col_a:
             st.subheader("✨ 本卦")
@@ -289,18 +297,22 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
             st.markdown(f"**{change_name}**（第{changing_line}爻動）")
             st.write(change_mean)
         
-        st.subheader("📖 完整六爻爻辭（本卦）")
-        with st.expander("點擊展開查看全部爻辭", expanded=True):
+        # ==================== 完整爻辭（本卦 + 變卦）====================
+        st.subheader("📖 本卦完整爻辭")
+        with st.expander("展開本卦全部爻辭", expanded=True):
             for i in range(1, 7):
-                yao_text = YAO_CIDIAN.get(orig_id, {}).get(i, "爻辭載入中...")
+                yao_text = YAO_CIDIAN.get(orig_id, {}).get(i, "載入中...")
+                color = "red" if i == changing_line else "black"
                 mark = " **【變動爻】**" if i == changing_line else ""
-                st.markdown(f"**{line_names[i-1]}爻**{mark}：{yao_text}")
+                st.markdown(f"<span style='color:{color}'>**{line_names[i-1]}爻**{mark}：{yao_text}</span>", unsafe_allow_html=True)
         
-        yao_type = "九" if original_lines[flip_idx] == 1 else "六"
-        st.subheader(f"🔥 變動爻重點：{yao_type}{line_names[changing_line-1]}")
-        st.info(YAO_CIDIAN.get(orig_id, {}).get(changing_line, "宜守正待時"))
+        st.subheader("📖 變卦完整爻辭")
+        with st.expander("展開變卦全部爻辭", expanded=False):
+            for i in range(1, 7):
+                yao_text = YAO_CIDIAN.get(change_id, {}).get(i, "載入中...")
+                st.markdown(f"**{line_names[i-1]}爻**：{yao_text}")
         
-        # 【新增】QR Code 手機掃碼分享
+        # QR Code（保持不變）
         st.subheader("📱 手機掃碼分享本次結果")
         summary = f"""【易經占卜結果】
 姓名：{name}
@@ -308,13 +320,12 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
 本卦：{orig_name}
 變卦：{change_name}（第{changing_line}爻動）
 日主五行：{main_elem}
-建議：{main_elem}宜守正待時、謙虛應變
 祝：福慧雙修、一生平安 🙏"""
-        
         qr = qrcode.make(summary)
         img_buffer = BytesIO()
         qr.save(img_buffer, format="PNG")
         img_buffer.seek(0)
+        st.image(img_buffer, caption="掃描此 QR Code 即可看到完整占卜結果", use_column_width=False)
         
         st.image(img_buffer, caption="掃描此 QR Code 即可看到完整占卜結果（適合分享給朋友）", use_column_width=False)
         st.caption("📲 手機掃描後可直接複製文字或轉發")
