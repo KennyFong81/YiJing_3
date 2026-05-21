@@ -235,18 +235,13 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         hour = now.hour
         h_num = get_hour_number(hour)
         
-        upper = random.randint(1, 8)
-        lower = random.randint(1, 8)
-        total = upper + lower + h_num
-        remainder = total % 6
-        changing_line = 6 if remainder == 0 else remainder
-        
+        # 已修正上卦下卦次序
         lower = random.randint(1, 8)   # 下卦（黑色）
         upper = random.randint(1, 8)   # 上卦（紅色）
         
-        lower_lines = TRIGRAM_LINES[lower][:]   # 下面三爻
-        upper_lines = TRIGRAM_LINES[upper][:]   # 上面三爻
-        original_lines = lower_lines + upper_lines   # 由下往上：0~2=下卦，3~5=上卦
+        lower_lines = TRIGRAM_LINES[lower][:]
+        upper_lines = TRIGRAM_LINES[upper][:]
+        original_lines = lower_lines + upper_lines
         
         total = upper + lower + h_num
         remainder = total % 6
@@ -264,27 +259,10 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         orig_name, orig_mean = HEXAGRAMS.get(orig_id, ("未知卦", ""))
         change_name, change_mean = HEXAGRAMS.get(change_id, ("未知卦", ""))
         
-        main_elem = five_elements_analysis(year, month)
+        st.success(f"🙏 {name}，卦象已成！")
         
-        # 儲存紀錄
-        record = {
-            "時間": now.strftime("%Y-%m-%d %H:%M:%S"),
-            "姓名": name,
-            "出生年月": f"{year}-{month:02d}-{day:02d}",
-            "本卦": orig_name,
-            "變卦": change_name,
-            "變動爻": f"第{changing_line}爻",
-            "日主五行": main_elem,
-            "總和": total,
-            "時辰": h_num
-        }
-        st.session_state.history.append(record)
-        
-        st.success(f"🙏 {name}，卦象已成！已自動存入歷史紀錄")
-        
-        # 顯示起卦過程、六爻、本卦變卦（與上次相同）
-        # 起卦過程（顏色嚴格按照你要求）
-        st.subheader("📍 起卦過程（已修正上卦下卦次序）")
+        # 起卦過程顯示
+        st.subheader("📍 起卦過程")
         st.markdown(f'**上卦（紅色）**：<span style="color:red">**{upper}**</span>　{BAGUA[upper]}', unsafe_allow_html=True)
         st.markdown(f'**下卦（黑色）**：<span style="color:black">**{lower}**</span>　{BAGUA[lower]}', unsafe_allow_html=True)
         st.markdown(f'**時辰數**：{h_num}　（{hour:02d}點時段）')
@@ -299,9 +277,6 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
             mark = "　**← 變動**" if (i+1) == changing_line else ""
             gua_label = "　**（下卦）**" if i < 3 else "　**（上卦）**"
             st.markdown(f"**{line_names[i]}爻**　{symbols[original_lines[i]]}{mark}{gua_label}")
-重點注意
-
-每一行開頭的空格必須完全
         
         col_a, col_b = st.columns(2)
         with col_a:
@@ -313,7 +288,8 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
             st.markdown(f"**{change_name}**（第{changing_line}爻動）")
             st.write(change_mean)
         
-        # 完整爻辭（與上次相同）
+        five_elements_analysis(year, month)
+        
         st.subheader("📖 完整六爻爻辭（本卦）")
         with st.expander("點擊展開查看全部爻辭", expanded=True):
             for i in range(1, 7):
