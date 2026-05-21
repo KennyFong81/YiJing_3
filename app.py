@@ -235,7 +235,6 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         hour = now.hour
         h_num = get_hour_number(hour)
         
-        # ==================== 起卦 =====================
         lower = random.randint(1, 8)   # 下卦（黑色）
         upper = random.randint(1, 8)   # 上卦（紅色）
         
@@ -253,8 +252,19 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         new_lower = get_trigram_from_lines(new_lines[0:3])
         new_upper = get_trigram_from_lines(new_lines[3:6])
         
-        orig_id = (upper - 1) * 8 + lower
-        change_id = (new_upper - 1) * 8 + new_lower
+        # 【重要修正】正確的後天卦序對應表
+        hex_map = {
+            (1,1):1,(1,2):11,(1,3):14,(1,4):43,(1,5):9,(1,6):5,(1,7):26,(1,8):2,
+            (2,1):10,(2,2):58,(2,3):38,(2,4):54,(2,5):61,(2,6):47,(2,7):28,(2,8):57,
+            (3,1):13,(3,2):49,(3,3):30,(3,4):21,(3,5):50,(3,6):64,(3,7):56,(3,8):20,
+            (4,1):25,(4,2):17,(4,3):21,(4,4):51,(4,5):42,(4,6):3,(4,7):27,(4,8):24,
+            (5,1):44,(5,2):9,(5,3):37,(5,4):42,(5,5):57,(5,6):59,(5,7):53,(5,8):18,
+            (6,1):6,(6,2):47,(6,3):64,(6,4):40,(6,5):59,(6,6):29,(6,7):4,(6,8):7,
+            (7,1):33,(7,2):31,(7,3):56,(7,4):62,(7,5):53,(7,6):39,(7,7):52,(7,8):15,
+            (8,1):12,(8,2):45,(8,3):35,(8,4):16,(8,5):20,(8,6):8,(8,7):23,(8,8):2
+        }
+        orig_id = hex_map.get((upper, lower), 1)
+        change_id = hex_map.get((new_upper, new_lower), 1)
         
         orig_name, orig_mean = HEXAGRAMS.get(orig_id, ("未知卦", ""))
         change_name, change_mean = HEXAGRAMS.get(change_id, ("未知卦", ""))
@@ -263,15 +273,15 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         
         st.success(f"🙏 {name}，卦象已成！")
         
-        # 起卦過程
         st.subheader("📍 起卦過程")
         st.markdown(f'**上卦（紅色）**：<span style="color:red">**{upper}**</span>　{BAGUA[upper]}', unsafe_allow_html=True)
         st.markdown(f'**下卦（黑色）**：<span style="color:black">**{lower}**</span>　{BAGUA[lower]}', unsafe_allow_html=True)
         st.markdown(f'**時辰數**：{h_num}　（{hour:02d}點時段）')
         st.markdown(f'**總和** = {upper} + {lower} + {h_num} = **{total}**')
         st.markdown(f'**{total} ÷ 6** 餘數 **{remainder}** → **第 {changing_line} 爻變動**')
+        st.markdown(f"**計算結果**：上卦 {BAGUA[upper]} + 下卦 {BAGUA[lower]} = **{orig_name}**")
         
-        # 圖畫式六爻（本卦 + 變卦）
+        # 圖畫式六爻
         line_names = ["初", "二", "三", "四", "五", "上"]
         symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
         
@@ -285,7 +295,6 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         draw_hexagram(original_lines, "✨ 本卦六爻圖（由下往上）")
         draw_hexagram(new_lines, "🔄 變卦六爻圖（由下往上）", highlight_line=changing_line)
         
-        # 本卦與變卦
         col_a, col_b = st.columns(2)
         with col_a:
             st.subheader("✨ 本卦")
@@ -296,7 +305,6 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
             st.markdown(f"**{change_name}**（第{changing_line}爻動）")
             st.write(change_mean)
         
-        # 本卦完整爻辭（變動爻紅色）
         st.subheader("📖 本卦完整爻辭")
         with st.expander("展開本卦全部爻辭", expanded=True):
             for i in range(1, 7):
@@ -305,14 +313,12 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
                 color = "red" if i == changing_line else "black"
                 st.markdown(f"<span style='color:{color}'>**{line_names[i-1]}爻**{mark}：{yao_text}</span>", unsafe_allow_html=True)
         
-        # 變卦完整爻辭
         st.subheader("📖 變卦完整爻辭")
         with st.expander("展開變卦全部爻辭", expanded=False):
             for i in range(1, 7):
                 yao_text = YAO_CIDIAN.get(change_id, {}).get(i, "載入中...")
                 st.markdown(f"**{line_names[i-1]}爻**：{yao_text}")
         
-        # QR Code 分享
         st.subheader("📱 手機掃碼分享本次結果")
         summary = f"""【易經占卜結果】
 姓名：{name}
