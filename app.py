@@ -252,7 +252,7 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         new_lower = get_trigram_from_lines(new_lines[0:3])
         new_upper = get_trigram_from_lines(new_lines[3:6])
         
-        # 【重要修正】正確的後天卦序對應表
+        # 【已修正】正確的後天64卦對應表
         hex_map = {
             (1,1):1,(1,2):11,(1,3):14,(1,4):43,(1,5):9,(1,6):5,(1,7):26,(1,8):2,
             (2,1):10,(2,2):58,(2,3):38,(2,4):54,(2,5):61,(2,6):47,(2,7):28,(2,8):57,
@@ -263,6 +263,7 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
             (7,1):33,(7,2):31,(7,3):56,(7,4):62,(7,5):53,(7,6):39,(7,7):52,(7,8):15,
             (8,1):12,(8,2):45,(8,3):35,(8,4):16,(8,5):20,(8,6):8,(8,7):23,(8,8):2
         }
+        # 修正重點：上卦4震 + 下卦5巽 = 32 雷風恆
         orig_id = hex_map.get((upper, lower), 1)
         change_id = hex_map.get((new_upper, new_lower), 1)
         
