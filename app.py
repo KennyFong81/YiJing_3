@@ -259,9 +259,11 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         orig_name, orig_mean = HEXAGRAMS.get(orig_id, ("未知卦", ""))
         change_name, change_mean = HEXAGRAMS.get(change_id, ("未知卦", ""))
         
+        # 【重要修正】這裡加上 main_elem =
+        main_elem = five_elements_analysis(year, month)
+        
         st.success(f"🙏 {name}，卦象已成！")
         
-        # 起卦過程顯示
         st.subheader("📍 起卦過程")
         st.markdown(f'**上卦（紅色）**：<span style="color:red">**{upper}**</span>　{BAGUA[upper]}', unsafe_allow_html=True)
         st.markdown(f'**下卦（黑色）**：<span style="color:black">**{lower}**</span>　{BAGUA[lower]}', unsafe_allow_html=True)
@@ -269,7 +271,6 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         st.markdown(f'**總和** = {upper} + {lower} + {h_num} = **{total}**')
         st.markdown(f'**{total} ÷ 6** 餘數 **{remainder}** → **第 {changing_line} 爻變動**')
         
-        # 六爻顯示（由下往上）
         st.subheader("📜 本卦六爻（由下往上）")
         line_names = ["初", "二", "三", "四", "五", "上"]
         symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
@@ -287,8 +288,6 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
             st.subheader("🔄 變卦")
             st.markdown(f"**{change_name}**（第{changing_line}爻動）")
             st.write(change_mean)
-        
-        five_elements_analysis(year, month)
         
         st.subheader("📖 完整六爻爻辭（本卦）")
         with st.expander("點擊展開查看全部爻辭", expanded=True):
