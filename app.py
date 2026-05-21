@@ -22,8 +22,31 @@ YAO_CIDIAN = { ... }  # ← 貼上你上次完整的384條爻辭字典
 
 # ====================== 時辰 & 五行函數（不變）======================
 def get_hour_number(hour):
-    if hour in [23, 0, 1]: return 1
-    return ((hour + 1) // 2) % 12 + 1 if hour % 2 == 0 else ((hour + 1) // 2)
+    """嚴格按照你指定的時辰數目"""
+    if 0 <= hour < 2:      # 凌晨12點～凌晨兩點
+        return 1
+    elif 2 <= hour < 4:    # 凌晨兩點～四點
+        return 2
+    elif 4 <= hour < 6:
+        return 3
+    elif 6 <= hour < 8:
+        return 4
+    elif 8 <= hour < 10:
+        return 5
+    elif 10 <= hour < 12:
+        return 6
+    elif 12 <= hour < 14:
+        return 7
+    elif 14 <= hour < 16:
+        return 8
+    elif 16 <= hour < 18:
+        return 9
+    elif 18 <= hour < 20:
+        return 10
+    elif 20 <= hour < 22:
+        return 11
+    else:                  # 22點～24點
+        return 12
 
 def five_elements_analysis(year, month):
     # （與上次完全相同，請保留完整函數內容）
@@ -123,11 +146,13 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         st.success(f"🙏 {name}，卦象已成！已自動存入歷史紀錄")
         
         # 顯示起卦過程、六爻、本卦變卦（與上次相同）
+        # 起卦過程（顏色嚴格按照你要求）
         st.subheader("📍 起卦過程")
-        st.markdown(f"**上卦（紅）**：{upper}　{BAGUA[upper]}")
-        st.markdown(f"**下卦（黑）**：{lower}　{BAGUA[lower]}")
-        st.markdown(f"**時辰數**：{h_num}　（{hour:02d}點）")
-        st.markdown(f"**總和** {total} ÷ 6 餘數 **{remainder}** → **第 {changing_line} 爻變動**")
+        st.markdown(f'**上卦**：<span style="color:red">**{upper}**</span>　{BAGUA[upper]}', unsafe_allow_html=True)
+        st.markdown(f'**下卦**：<span style="color:black">**{lower}**</span>　{BAGUA[lower]}', unsafe_allow_html=True)
+        st.markdown(f'**時辰數**：{h_num}　（{hour:02d}點時段）')
+        st.markdown(f'**總和** = {upper} + {lower} + {h_num} = **{total}**')
+        st.markdown(f'**{total} ÷ 6** = ... 餘數 **{remainder}** → **第 {changing_line} 爻變動**')
         
         st.subheader("📜 本卦六爻（由下而上）")
         line_names = ["初", "二", "三", "四", "五", "上"]
