@@ -241,9 +241,16 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         remainder = total % 6
         changing_line = 6 if remainder == 0 else remainder
         
-        lower_lines = TRIGRAM_LINES[lower][:]
-        upper_lines = TRIGRAM_LINES[upper][:]
-        original_lines = lower_lines + upper_lines
+        lower = random.randint(1, 8)   # 下卦（黑色）
+        upper = random.randint(1, 8)   # 上卦（紅色）
+        
+        lower_lines = TRIGRAM_LINES[lower][:]   # 下面三爻
+        upper_lines = TRIGRAM_LINES[upper][:]   # 上面三爻
+        original_lines = lower_lines + upper_lines   # 由下往上：0~2=下卦，3~5=上卦
+        
+        total = upper + lower + h_num
+        remainder = total % 6
+        changing_line = 6 if remainder == 0 else remainder
         
         flip_idx = changing_line - 1
         new_lines = original_lines[:]
@@ -277,19 +284,22 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         
         # 顯示起卦過程、六爻、本卦變卦（與上次相同）
         # 起卦過程（顏色嚴格按照你要求）
-        st.subheader("📍 起卦過程")
-        st.markdown(f'**上卦**：<span style="color:red">**{upper}**</span>　{BAGUA[upper]}', unsafe_allow_html=True)
-        st.markdown(f'**下卦**：<span style="color:black">**{lower}**</span>　{BAGUA[lower]}', unsafe_allow_html=True)
+st.subheader("📍 起卦過程（已修正上卦下卦次序）")
+        st.markdown(f'**上卦（紅色）**：<span style="color:red">**{upper}**</span>　{BAGUA[upper]}', unsafe_allow_html=True)
+        st.markdown(f'**下卦（黑色）**：<span style="color:black">**{lower}**</span>　{BAGUA[lower]}', unsafe_allow_html=True)
         st.markdown(f'**時辰數**：{h_num}　（{hour:02d}點時段）')
         st.markdown(f'**總和** = {upper} + {lower} + {h_num} = **{total}**')
-        st.markdown(f'**{total} ÷ 6** = ... 餘數 **{remainder}** → **第 {changing_line} 爻變動**')
+        st.markdown(f'**{total} ÷ 6** 餘數 **{remainder}** → **第 {changing_line} 爻變動**')
         
-        st.subheader("📜 本卦六爻（由下而上）")
+        # 六爻顯示（由下往上）
+        st.subheader("📜 本卦六爻（由下往上）")
         line_names = ["初", "二", "三", "四", "五", "上"]
         symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
         for i in range(6):
             mark = "　**← 變動**" if (i+1) == changing_line else ""
-            st.markdown(f"**{line_names[i]}爻**　{symbols[original_lines[i]]}{mark}")
+            # 明確標示屬於哪一卦
+            gua_label = "　**（下卦）**" if i < 3 else "　**（上卦）**"
+            st.markdown(f"**{line_names[i]}爻**　{symbols[original_lines[i]]}{mark}{gua_label}")
         
         col_a, col_b = st.columns(2)
         with col_a:
