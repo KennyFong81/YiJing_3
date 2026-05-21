@@ -284,7 +284,7 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         
         # 顯示起卦過程、六爻、本卦變卦（與上次相同）
         # 起卦過程（顏色嚴格按照你要求）
-st.subheader("📍 起卦過程（已修正上卦下卦次序）")
+        st.subheader("📍 起卦過程（已修正上卦下卦次序）")
         st.markdown(f'**上卦（紅色）**：<span style="color:red">**{upper}**</span>　{BAGUA[upper]}', unsafe_allow_html=True)
         st.markdown(f'**下卦（黑色）**：<span style="color:black">**{lower}**</span>　{BAGUA[lower]}', unsafe_allow_html=True)
         st.markdown(f'**時辰數**：{h_num}　（{hour:02d}點時段）')
@@ -297,9 +297,11 @@ st.subheader("📍 起卦過程（已修正上卦下卦次序）")
         symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
         for i in range(6):
             mark = "　**← 變動**" if (i+1) == changing_line else ""
-            # 明確標示屬於哪一卦
             gua_label = "　**（下卦）**" if i < 3 else "　**（上卦）**"
             st.markdown(f"**{line_names[i]}爻**　{symbols[original_lines[i]]}{mark}{gua_label}")
+重點注意：
+
+每一行開頭的空格必須完全
         
         col_a, col_b = st.columns(2)
         with col_a:
