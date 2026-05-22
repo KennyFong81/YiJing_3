@@ -423,21 +423,25 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
                 yao_text = YAO_CIDIAN.get(change_id, {}).get(i, "載入中...")
                 st.markdown(f"**{line_names[i-1]}爻**：{yao_text}")
         
-        st.subheader("📱 掃 QR Code 直接跳到完整網頁版")
         app_url = "https://yijing-3.streamlit.app/"
+        
         summary = f"""【易經占卜結果】
 姓名：{name}
 時間：{now.strftime("%Y-%m-%d %H:%M")}（{selected_tz}）
 本卦：{orig_name}
 變卦：{change_name}（第{changing_line}爻動）
 日主五行：{main_elem}
-完整結果請點擊下方連結查看：
+
+🔗 點擊以下連結查看完整網頁版：
 {app_url}"""
+
         qr = qrcode.make(summary)
         img_buffer = BytesIO()
         qr.save(img_buffer, format="PNG")
         img_buffer.seek(0)
-        st.image(img_buffer, caption="掃描此 QR Code → 直接顯示完整占卜結果文字 + 點擊連結回到網頁版", use_column_width=False)
-        st.caption(f"📌 App 主連結：{app_url}")
+        
+        st.subheader("📱 掃 QR Code 直接跳到完整網頁版")
+        st.image(img_buffer, caption="掃描後會顯示文字結果 + 可點擊連結", use_column_width=False)
+        st.markdown(f"**🔗 直接點擊這裡回到完整網頁版** → [{app_url}]({app_url})")
 st.divider()
 st.caption("✅ 已加入歷史紀錄自動儲存＋QR Code分享｜程式由 Grok 為你客製開發")
