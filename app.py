@@ -257,13 +257,12 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         
         lower_lines = TRIGRAM_LINES[lower][:]
         upper_lines = TRIGRAM_LINES[upper][:]
-        original_lines = lower_lines + upper_lines   # index 0 = 初爻（最下面）
+        original_lines = lower_lines + upper_lines   # ← lower 先，upper 後
         
         total = upper + lower + h_num
         remainder = total % 6
         changing_line = 6 if remainder == 0 else remainder
         flip_idx = changing_line - 1
-        
         new_lines = original_lines[:]
         new_lines[flip_idx] = 1 - new_lines[flip_idx]
         
@@ -320,11 +319,13 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
         
         def draw_hexagram(lines, title, highlight_line=None):
-            st.subheader(title)
-            for i in range(6):   # index 0 = 初爻（最下面）
-                mark = "　**← 變動**" if (i+1) == highlight_line else ""
-                color = "red" if (i+1) == highlight_line else "black"
-                st.markdown(f"<span style='color:{color}'>**{line_names[i]}爻**　{symbols[lines[i]]}{mark}</span>", unsafe_allow_html=True)
+    st.subheader(title)
+    line_names = ["初", "二", "三", "四", "五", "上"]
+    symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
+    for i in range(6):   # ← 重點：index 0 = 初爻（最下面）
+        mark = "　**← 變動**" if (i+1) == highlight_line else ""
+        color = "red" if (i+1) == highlight_line else "black"
+        st.markdown(f"<span style='color:{color}'>**{line_names[i]}爻**　{symbols[lines[i]]}{mark}</span>", unsafe_allow_html=True)
         
         draw_hexagram(original_lines, "📜 本卦六爻（由下往上）")
         draw_hexagram(new_lines, "📜 變卦六爻（由下往上）", highlight_line=changing_line)
