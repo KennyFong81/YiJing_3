@@ -330,8 +330,41 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
                 unsafe_allow_html=True
             )
         
-        draw_hexagram(original_lines, "📜 本卦六爻（由下往上）")
-        draw_hexagram(new_lines, "📜 變卦六爻（由下往上）", highlight_line=changing_line)
+        hex_symbol = chr(0x4DC0 + orig_id - 1)
+change_symbol = chr(0x4DC0 + change_id - 1)
+
+col_sym1, col_sym2 = st.columns(2)
+
+# 左邊 = 本卦（original）
+with col_sym1:
+    st.markdown(f"<div style='font-size:90px; text-align:center;'>{hex_symbol}</div>", unsafe_allow_html=True)
+    st.subheader("✨ 本卦")
+    st.markdown(f"**{orig_name}**")
+    st.write(orig_mean)
+
+# 右邊 = 變卦（changed）
+with col_sym2:
+    st.markdown(f"<div style='font-size:90px; text-align:center;'>{change_symbol}</div>", unsafe_allow_html=True)
+    st.subheader("🔄 變卦")
+    st.markdown(f"**{change_name}**（第{changing_line}爻動）")
+    st.write(change_mean)
+
+# ====================== 六爻圖 ======================
+def draw_hexagram(lines, title, highlight_line=None):
+    st.subheader(title)
+    line_names = ["初", "二", "三", "四", "五", "上"]
+    symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
+    for i in range(6):
+        mark = "　**← 變動**" if (i + 1) == highlight_line else ""
+        color = "red" if (i + 1) == highlight_line else "black"
+        st.markdown(
+            f"<span style='color:{color}'>**{line_names[i]}爻**　{symbols[lines[i]]}{mark}</span>",
+            unsafe_allow_html=True
+        )
+
+# 左邊畫本卦，右邊畫變卦
+draw_hexagram(original_lines, "📜 本卦六爻（由下往上）")
+draw_hexagram(new_lines, "📜 變卦六爻（由下往上）", highlight_line=changing_line)
         
         # ====================== 歷史典故 + 漫畫風格插圖 ======================
         STORY_EMOJI = {
