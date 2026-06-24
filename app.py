@@ -450,12 +450,12 @@ STORY_DICT = {
             64: "未濟，慎終如始。"
         }
         
-        st.subheader("📜 本卦歷史典故")
+st.subheader("📜 本卦歷史典故")
         with st.expander("展開本卦歷史故事 + 漫畫插圖", expanded=True):
             st.markdown(f"<div style='font-size:60px; text-align:center;'>{STORY_EMOJI.get(orig_id, '📖')}</div>", unsafe_allow_html=True)
             st.write(STORY_DICT.get(orig_id, "此卦有深遠歷史意義，宜細讀卦辭體會。"))
         
-        st.subheader("📜 變卦歷史典故")
+st.subheader("📜 變卦歷史典故")
         with st.expander("展開變卦歷史故事 + 漫畫插圖", expanded=False):
             st.markdown(f"<div style='font-size:60px; text-align:center;'>{STORY_EMOJI.get(change_id, '📖')}</div>", unsafe_allow_html=True)
             st.write(STORY_DICT.get(change_id, "此卦有深遠歷史意義，宜細讀卦辭體會。"))
