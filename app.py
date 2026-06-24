@@ -243,7 +243,7 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         lower = random.randint(1, 8)
         upper = random.randint(1, 8)
         
-        # ====================== 正確的 TRIGRAM_LINES（由下往上，index 0 = 初爻）======================
+        # 正確的 TRIGRAM_LINES
         TRIGRAM_LINES = {
             1: [1, 1, 1],  # 乾
             2: [0, 0, 0],  # 坤
@@ -257,12 +257,13 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         
         lower_lines = TRIGRAM_LINES[lower][:]
         upper_lines = TRIGRAM_LINES[upper][:]
-        original_lines = lower_lines + upper_lines   # ← lower 先，upper 後
+        original_lines = lower_lines + upper_lines
         
         total = upper + lower + h_num
         remainder = total % 6
         changing_line = 6 if remainder == 0 else remainder
         flip_idx = changing_line - 1
+        
         new_lines = original_lines[:]
         new_lines[flip_idx] = 1 - new_lines[flip_idx]
         
@@ -290,6 +291,7 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         
         st.success(f"🙏 {name}，卦象已成！")
         
+        # 起卦過程
         st.subheader("📍 起卦過程")
         st.markdown(f'**上卦（紅色）**：<span style="color:red">**{upper}**</span>　{BAGUA[upper]}', unsafe_allow_html=True)
         st.markdown(f'**下卦（黑色）**：<span style="color:black">**{lower}**</span>　{BAGUA[lower]}', unsafe_allow_html=True)
@@ -298,7 +300,7 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         st.markdown(f'**{total} ÷ 6** 餘數 **{remainder}** → **第 {changing_line} 爻變動**')
         st.markdown(f"**計算結果**：上卦 {BAGUA[upper]} + 下卦 {BAGUA[lower]} = **{orig_name}**")
         
-        # ====================== 圖畫式卦象（已修正線序）======================
+        # 圖畫式卦象 + 六爻圖
         hex_symbol = chr(0x4DC0 + orig_id - 1)
         change_symbol = chr(0x4DC0 + change_id - 1)
         
@@ -314,10 +316,6 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
             st.markdown(f"**{change_name}**（第{changing_line}爻動）")
             st.write(change_mean)
         
-        # ====================== 正確的六爻圖 ======================
-        line_names = ["初", "二", "三", "四", "五", "上"]
-        symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
-        
         def draw_hexagram(lines, title, highlight_line=None):
             st.subheader(title)
             line_names = ["初", "二", "三", "四", "五", "上"]
@@ -326,157 +324,25 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
                 mark = "　**← 變動**" if (i + 1) == highlight_line else ""
                 color = "red" if (i + 1) == highlight_line else "black"
                 st.markdown(
-                f"<span style='color:{color}'>**{line_names[i]}爻**　{symbols[lines[i]]}{mark}</span>",
-                unsafe_allow_html=True
-            )
+                    f"<span style='color:{color}'>**{line_names[i]}爻**　{symbols[lines[i]]}{mark}</span>",
+                    unsafe_allow_html=True
+                )
         
-        hex_symbol = chr(0x4DC0 + orig_id - 1)
-change_symbol = chr(0x4DC0 + change_id - 1)
-
-col_sym1, col_sym2 = st.columns(2)
-
-# 左邊 = 本卦（original）
-with col_sym1:
-    st.markdown(f"<div style='font-size:90px; text-align:center;'>{hex_symbol}</div>", unsafe_allow_html=True)
-    st.subheader("✨ 本卦")
-    st.markdown(f"**{orig_name}**")
-    st.write(orig_mean)
-
-# 右邊 = 變卦（changed）
-with col_sym2:
-    st.markdown(f"<div style='font-size:90px; text-align:center;'>{change_symbol}</div>", unsafe_allow_html=True)
-    st.subheader("🔄 變卦")
-    st.markdown(f"**{change_name}**（第{changing_line}爻動）")
-    st.write(change_mean)
-
-# ====================== 六爻圖 ======================
-def draw_hexagram(lines, title, highlight_line=None):
-    st.subheader(title)
-    line_names = ["初", "二", "三", "四", "五", "上"]
-    symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
-    for i in range(6):
-        mark = "　**← 變動**" if (i + 1) == highlight_line else ""
-        color = "red" if (i + 1) == highlight_line else "black"
-        st.markdown(
-            f"<span style='color:{color}'>**{line_names[i]}爻**　{symbols[lines[i]]}{mark}</span>",
-            unsafe_allow_html=True
-        )
-
-# 左邊畫本卦，右邊畫變卦
-draw_hexagram(original_lines, "📜 本卦六爻（由下往上）")
-draw_hexagram(new_lines, "📜 變卦六爻（由下往上）", highlight_line=changing_line)
+        draw_hexagram(original_lines, "📜 本卦六爻（由下往上）")
+        draw_hexagram(new_lines, "📜 變卦六爻（由下往上）", highlight_line=changing_line)
         
-# ====================== 歷史典故 + 漫畫風格插圖 ======================
-STORY_EMOJI = {        
-            1: "💪🌟☁️🏔️", 2: "🌍🌸🌳🏞️", 3: "🌱🚀🌧️", 4: "📚👦🪄", 5: "☂️⏳🌊",
-            6: "⚖️🗣️⚔️", 7: "🛡️⚔️🏹", 8: "🤝👥❤️", 9: "☁️🌧️🌾", 10: "🐅👣⚠️",
-            11: "☀️🌍🌸", 12: "🌫️🚫🏔️", 13: "👥❤️🤝", 14: "🔥☁️💎", 15: "🙇🌟🏔️",
-            16: "🎉🌾🍂", 17: "🌊🏃‍♂️", 18: "🧹🔄🌿", 19: "👑📖🌟", 20: "👀🌌🏔️",
-            21: "⚡⚖️🔥", 22: "🎨📜🖌️", 23: "🏔️🌍🪨", 24: "🌱🔄☀️", 25: "🌾🙌🌟",
-            26: "🐮🏋️💪", 27: "🍲🦷🌾", 28: "🏗️⚠️🌳", 29: "💧🕳️🌊", 30: "🔥☀️🔥",
-            31: "❤️🤝🌹", 32: "⏳❤️🌬️", 33: "🏃‍♂️🏔️🌲", 34: "💪🦸⚡", 35: "🌅🚀🌟",
-            36: "🌑🕵️‍♂️", 37: "🏠👪❤️", 38: "🔀❤️🤝", 39: "🪨🚶‍♂️", 40: "🔓🕊️🌈",
-            41: "📉📈💰", 42: "🌬️⚡🌳", 43: "⚔️💧🌊", 44: "🐍⚠️🌿", 45: "👥🛕🙏",
-            46: "🌳📈🏔️", 47: "🌊🏔️🪨", 48: "🪣💧🏞️", 49: "🔄🐅🔥", 50: "🪔🔥🍲",
-            51: "⚡😱🌩️", 52: "🏔️🧘‍♂️", 53: "🪶📈🌿", 54: "💍👰❤️", 55: "🌞🏠🎉",
-            56: "🧳🏕️🌲", 57: "🌬️🍃🌳", 58: "😊💧🌊", 59: "🌊🧹🌬️", 60: "🪜⏱️🌊",
-            61: "🐦❤️🌾", 62: "🐦⚠️🌳", 63: "🌉💧🌊", 64: "🌉🚶‍♂️🌅"
-        }
+        # 簡化版歷史典故（先用這個，之後再加完整版）
+        st.subheader("📜 本卦歷史典故")
+        with st.expander("展開本卦歷史故事", expanded=True):
+            st.write("此卦有深遠歷史意義，宜細讀卦辭體會。")
         
-STORY_DICT = {
-            1: "文王被拘羑里，演《周易》，自強不息。",
-            2: "大地厚德載物，黃裳元吉。",
-            3: "屯難之時，創業維艱，如盤古開天。",
-            4: "童蒙求我，啟蒙求教，孔子教化弟子。",
-            5: "需于郊，守正待時，如大禹治水。",
-            6: "訟卦，慎言慎行，避免訴訟。",
-            7: "師出以律，嚴肅治軍，如姜太公用兵。",
-            8: "親比團結，得道多助。",
-            9: "密雲不雨，積小成大。",
-            10: "履虎尾，小心謹慎。",
-            11: "天地交泰，萬事亨通。",
-            12: "天地否閉，閉塞不通。",
-            13: "同人於野，志同道合。",
-            14: "火在天上，大有收穫。",
-            15: "謙受益，滿招損。",
-            16: "雷地豫，豐收喜悅之時。",
-            17: "隨時而動，順應潮流。",
-            18: "蠱卦，除舊布新，振弊起衰。",
-            19: "君臨天下，教化民眾。",
-            20: "觀卦，仰觀天道，學習觀察。",
-            21: "噬嗑，利用獄，明辨是非。",
-            22: "賁卦，文質彬彬。",
-            23: "山附於地，剝極必復。",
-            24: "一陽來復，復歸正道。",
-            25: "無妄而得，誠信為本。",
-            26: "大畜，畜養大德。",
-            27: "養生養德，觀頤自求口實。",
-            28: "大過，過猶不及。",
-            29: "習坎，行險而不失其信。",
-            30: "離明照耀，依附光明。",
-            31: "咸卦，感應相通，男女和合。",
-            32: "雷風恆，夫婦之道，恆久不變。",
-            33: "遯卦，退隱待時。",
-            34: "大壯，剛健而止。",
-            35: "晉卦，前進光明。",
-            36: "明夷，韜光養晦。",
-            37: "家人，家道正則天下定。",
-            38: "睽卦，和而不同。",
-            39: "蹇難之時，守正待援。",
-            40: "解難釋紛，否極泰來。",
-            41: "損上益下，損益有時。",
-            42: "風雷益，損上益下。",
-            43: "夬卦，剛決柔。",
-            44: "姤卦，防微杜漸。",
-            45: "萃卦，聚集團結。",
-            46: "升卦，逐步上升。",
-            47: "澤水困，君子處困守正自強。",
-            48: "井卦，井養不窮，德澤四方。",
-            49: "革卦，革故鼎新。",
-            50: "鼎卦，鼎新革故。",
-            51: "震卦，臨危不亂。",
-            52: "艮卦，止於至善。",
-            53: "漸卦，循序漸進。",
-            54: "歸妹，立家興業，慎終如始。",
-            55: "豐卦，盛極必衰。",
-            56: "旅卦，羈旅在外，慎行守正。",
-            57: "巽卦，柔能制剛。",
-            58: "兌卦，和悅喜樂。",
-            59: "渙卦，解散積鬱。",
-            60: "節卦，節制有度。",
-            61: "中孚，中心孚信。",
-            62: "小過，可小事，不可大事。",
-            63: "既濟，思患預防。",
-            64: "未濟，慎終如始。"
-        }
+        st.subheader("📜 變卦歷史典故")
+        with st.expander("展開變卦歷史故事", expanded=False):
+            st.write("此卦有深遠歷史意義，宜細讀卦辭體會。")
         
-st.subheader("📜 本卦歷史典故")
-        with st.expander("展開本卦歷史故事 + 漫畫插圖", expanded=True):
-            st.markdown(f"<div style='font-size:60px; text-align:center;'>{STORY_EMOJI.get(orig_id, '📖')}</div>", unsafe_allow_html=True)
-            st.write(STORY_DICT.get(orig_id, "此卦有深遠歷史意義，宜細讀卦辭體會。"))
-        
-st.subheader("📜 變卦歷史典故")
-        with st.expander("展開變卦歷史故事 + 漫畫插圖", expanded=False):
-            st.markdown(f"<div style='font-size:60px; text-align:center;'>{STORY_EMOJI.get(change_id, '📖')}</div>", unsafe_allow_html=True)
-            st.write(STORY_DICT.get(change_id, "此卦有深遠歷史意義，宜細讀卦辭體會。"))
-        
-        # 完整爻辭
-        st.subheader("📖 本卦完整爻辭")
-        with st.expander("展開本卦全部爻辭", expanded=True):
-            for i in range(1, 7):
-                yao_text = YAO_CIDIAN.get(orig_id, {}).get(i, "載入中...")
-                mark = " **【變動爻】**" if i == changing_line else ""
-                color = "red" if i == changing_line else "black"
-                st.markdown(f"<span style='color:{color}'>**{line_names[i-1]}爻**{mark}：{yao_text}</span>", unsafe_allow_html=True)
-        
-        st.subheader("📖 變卦完整爻辭")
-        with st.expander("展開變卦全部爻辭", expanded=False):
-            for i in range(1, 7):
-                yao_text = YAO_CIDIAN.get(change_id, {}).get(i, "載入中...")
-                st.markdown(f"**{line_names[i-1]}爻**：{yao_text}")
-        
+        # QR Code
+        st.subheader("📱 掃 QR Code 直接跳到完整網頁版")
         app_url = "https://yijing-3.streamlit.app/"
-        
         summary = f"""【易經占卜結果】
 姓名：{name}
 時間：{now.strftime("%Y-%m-%d %H:%M")}（{selected_tz}）
@@ -484,16 +350,12 @@ st.subheader("📜 變卦歷史典故")
 變卦：{change_name}（第{changing_line}爻動）
 日主五行：{main_elem}
 
-🔗 點擊以下連結查看完整網頁版：
-{app_url}"""
-
+🔗 完整網頁版：{app_url}"""
         qr = qrcode.make(summary)
         img_buffer = BytesIO()
         qr.save(img_buffer, format="PNG")
         img_buffer.seek(0)
-        
-        st.subheader("📱 掃 QR Code 直接跳到完整網頁版")
-        st.image(img_buffer, caption="掃描後會顯示文字結果 + 可點擊連結", use_column_width=False)
+        st.image(img_buffer, caption="掃描後可看到完整結果文字 + 點擊連結回到網頁版", use_column_width=False)
         st.markdown(f"**🔗 直接點擊這裡回到完整網頁版** → [{app_url}]({app_url})")
 st.divider()
 st.caption("✅ 已加入歷史紀錄自動儲存＋QR Code分享｜程式由 Grok 為你客製開發")
