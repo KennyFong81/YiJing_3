@@ -234,7 +234,6 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         import time
         time.sleep(1.5)
         
-        # 時區處理
         import pytz
         tz = pytz.timezone(selected_tz)
         now = datetime.datetime.now(tz)
@@ -244,20 +243,34 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         lower = random.randint(1, 8)
         upper = random.randint(1, 8)
         
+        # ====================== 正確的 TRIGRAM_LINES（由下往上，index 0 = 初爻）======================
+        TRIGRAM_LINES = {
+            1: [1, 1, 1],  # 乾
+            2: [0, 0, 0],  # 坤
+            3: [1, 0, 1],  # 離（正確：底實、中虛、頂實）
+            4: [0, 0, 1],  # 震
+            5: [0, 1, 0],  # 坎
+            6: [0, 1, 1],  # 巽
+            7: [1, 0, 0],  # 艮
+            8: [1, 1, 0],  # 兌
+        }
+        
         lower_lines = TRIGRAM_LINES[lower][:]
         upper_lines = TRIGRAM_LINES[upper][:]
-        original_lines = lower_lines + upper_lines
+        original_lines = lower_lines + upper_lines   # index 0 = 初爻（最下面）
         
         total = upper + lower + h_num
         remainder = total % 6
         changing_line = 6 if remainder == 0 else remainder
-        
         flip_idx = changing_line - 1
+        
         new_lines = original_lines[:]
         new_lines[flip_idx] = 1 - new_lines[flip_idx]
+        
         new_lower = get_trigram_from_lines(new_lines[0:3])
         new_upper = get_trigram_from_lines(new_lines[3:6])
         
+        # 你之前確認正確的 hex_map
         hex_map = {
             (1,1):1,(1,2):10,(1,3):13,(1,4):25,(1,5):44,(1,6):6,(1,7):33,(1,8):12,
             (2,1):43,(2,2):58,(2,3):49,(2,4):17,(2,5):28,(2,6):47,(2,7):31,(2,8):45,
@@ -286,7 +299,7 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         st.markdown(f'**{total} ÷ 6** 餘數 **{remainder}** → **第 {changing_line} 爻變動**')
         st.markdown(f"**計算結果**：上卦 {BAGUA[upper]} + 下卦 {BAGUA[lower]} = **{orig_name}**")
         
-        # ====================== 圖畫式卦象 ======================
+        # ====================== 圖畫式卦象（已修正線序）======================
         hex_symbol = chr(0x4DC0 + orig_id - 1)
         change_symbol = chr(0x4DC0 + change_id - 1)
         
@@ -302,15 +315,17 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
             st.markdown(f"**{change_name}**（第{changing_line}爻動）")
             st.write(change_mean)
         
-        # 六爻圖
+        # ====================== 正確的六爻圖 ======================
         line_names = ["初", "二", "三", "四", "五", "上"]
         symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
+        
         def draw_hexagram(lines, title, highlight_line=None):
             st.subheader(title)
-            for i in range(6):
+            for i in range(6):   # index 0 = 初爻（最下面）
                 mark = "　**← 變動**" if (i+1) == highlight_line else ""
                 color = "red" if (i+1) == highlight_line else "black"
                 st.markdown(f"<span style='color:{color}'>**{line_names[i]}爻**　{symbols[lines[i]]}{mark}</span>", unsafe_allow_html=True)
+        
         draw_hexagram(original_lines, "📜 本卦六爻（由下往上）")
         draw_hexagram(new_lines, "📜 變卦六爻（由下往上）", highlight_line=changing_line)
         
