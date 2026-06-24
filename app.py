@@ -319,6 +319,7 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
         
         def draw_hexagram(lines, title, highlight_line=None):
+            
         st.subheader(title)
            line_names = ["初", "二", "三", "四", "五", "上"]
            symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
