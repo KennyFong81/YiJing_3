@@ -323,7 +323,7 @@ if st.button("🔮 為我起一卦", type="primary", use_container_width=True):
         line_names = ["初", "二", "三", "四", "五", "上"]
         symbols = {1: "━━━　陽", 0: "⚊ ⚊　陰"}
         for i in range(6):
-        mark = "　**← 變動**" if (i + 1) == highlight_line else ""
+        mark = "← 變動" if (i + 1) == highlight_line else ""
         color = "red" if (i + 1) == highlight_line else "black"
         st.markdown(f"<span style='color:{color}'>**{line_names[i]}爻**　{symbols[lines[i]]}{mark}</span>",
             unsafe_allow_html=True)
